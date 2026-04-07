@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSM-5 SUD Criteria — Study Sheet</title>
+<style>
+  /* ── Reset & Base ────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 12px;
+    color: #1a1a1a;
+    background: #fff;
+    padding: 20px 28px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ── Title block ─────────────────────────────────────────── */
+  .page-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1B3A6B;
+    letter-spacing: -.2px;
+    margin-bottom: 2px;
+  }
+  .page-sub {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 14px;
+    border-bottom: 2px solid #1B3A6B;
+    padding-bottom: 8px;
+  }
+  .page-sub span {
+    display: inline-block;
+    background: #C00;
+    color: #fff;
+    padding: 1px 7px;
+    border-radius: 3px;
+    font-weight: 700;
+    margin-left: 6px;
+    font-size: 10px;
+    letter-spacing: .03em;
+  }
+
+  /* ── Rule strip ──────────────────────────────────────────── */
+  .rules-strip {
+    background: #1B3A6B;
+    color: #fff;
+    padding: 7px 14px;
+    border-radius: 5px;
+    font-size: 11px;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .rules-strip strong { font-weight: 700; }
+  .rules-strip .exc {
+    background: #C00;
+    color: #fff;
+    padding: 1px 7px;
+    border-radius: 3px;
+    font-weight: 700;
+    font-size: 10px;
+  }
+
+  /* ── 4-column domains grid ───────────────────────────────── */
+  .domains {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .domain { border-radius: 6px; overflow: hidden; border: 1px solid #ddd; }
+
+  .dhead {
+    padding: 8px 10px 7px;
+    border-bottom: 1px solid rgba(0,0,0,.1);
+  }
+  .dlabel { font-size: 9px; font-weight: 700; letter-spacing: .08em; opacity: .7; text-transform: uppercase; }
+  .dname  { font-size: 12px; font-weight: 700; margin-top: 1px; }
+  .dcount { font-size: 10px; opacity: .65; margin-top: 1px; }
+
+  /* Domain accent colours */
+  .d1 .dhead { background: #EEEDFE; color: #3C3489; }
+  .d2 .dhead { background: #E1F5EE; color: #085041; }
+  .d3 .dhead { background: #FAECE7; color: #712B13; }
+  .d4 .dhead { background: #FAEEDA; color: #633806; }
+
+  .ditems { background: #fafafa; padding: 6px; display: flex; flex-direction: column; gap: 5px; }
+
+  /* ── Criterion row ───────────────────────────────────────── */
+  .crit {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 7px 9px;
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    cursor: pointer;
+    transition: background .1s;
+  }
+  .crit:hover { background: #f5f5f5; }
+  .crit input[type="checkbox"] {
+    margin-top: 1px;
+    flex-shrink: 0;
+    width: 13px;
+    height: 13px;
+    cursor: pointer;
+    accent-color: #1B3A6B;
+  }
+
+  .crit-body { flex: 1; }
+  .cnum {
+    font-size: 9px;
+    font-weight: 700;
+    color: #999;
+    letter-spacing: .04em;
+    margin-bottom: 2px;
+  }
+  .ctext { font-size: 11px; color: #1a1a1a; line-height: 1.35; font-weight: 500; }
+
+  .hook {
+    font-size: 10px;
+    color: #555;
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px dashed #e0e0e0;
+    line-height: 1.45;
+    display: none;
+  }
+  .hook strong { color: #1B3A6B; }
+  .crit.open .hook { display: block; }
+
+  /* Domain accent left border */
+  .d1 .crit { border-left: 3px solid #7F77DD; }
+  .d2 .crit { border-left: 3px solid #1D9E75; }
+  .d3 .crit { border-left: 3px solid #D85A30; }
+  .d4 .crit { border-left: 3px solid #BA7517; }
+
+  /* ── Toggle-all + progress ───────────────────────────────── */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 11px;
+    color: #555;
+    flex-wrap: wrap;
+  }
+  .toolbar button {
+    background: #1B3A6B;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .toolbar button:hover { background: #254d8f; }
+  .toolbar button.sec {
+    background: #fff;
+    color: #1B3A6B;
+    border: 1px solid #1B3A6B;
+  }
+  .toolbar button.sec:hover { background: #EEF4FF; }
+  #progress-bar {
+    flex: 1;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+    min-width: 80px;
+  }
+  #progress-fill {
+    height: 100%;
+    background: #1B3A6B;
+    border-radius: 3px;
+    width: 0%;
+    transition: width .3s;
+  }
+  #progress-label { font-size: 11px; color: #555; min-width: 60px; }
+
+  /* ── Severity row ────────────────────────────────────────── */
+  .sev-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .sev-card {
+    border-radius: 6px;
+    padding: 9px 11px;
+    border: 1px solid transparent;
+  }
+  .sev-n     { font-size: 20px; font-weight: 700; line-height: 1; }
+  .sev-lbl   { font-size: 10px; font-weight: 700; letter-spacing: .04em; margin-top: 2px; text-transform: uppercase; }
+  .sev-desc  { font-size: 10px; color: #666; margin-top: 3px; line-height: 1.4; }
+
+  .mild { background: #EBF5E8; border-color: #A0CC80; }
+  .mild .sev-n, .mild .sev-lbl { color: #3B6D11; }
+  .mod  { background: #FDF3E3; border-color: #F5C070; }
+  .mod  .sev-n, .mod  .sev-lbl { color: #854F0B; }
+  .sev  { background: #FDEDEC; border-color: #F0A0A0; }
+  .sev  .sev-n, .sev  .sev-lbl { color: #791F1F; }
+  .dsm4 { background: #F4F6FB; border-color: #B5C8E8; }
+  .dsm4 .sev-n { font-size: 13px; font-weight: 700; color: #1B3A6B; }
+
+  /* ── Notes grid ──────────────────────────────────────────── */
+  .notes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .note {
+    background: #fafafa;
+    border-radius: 5px;
+    padding: 9px 11px;
+    border-left: 3px solid;
+    border-top: 1px solid #e8e8e8;
+    border-right: 1px solid #e8e8e8;
+    border-bottom: 1px solid #e8e8e8;
+  }
+  .note-head { font-size: 11px; font-weight: 700; margin-bottom: 3px; }
+  .note-body { font-size: 10.5px; color: #444; line-height: 1.5; }
+  .note-body strong { color: #1a1a1a; }
+
+  /* ── Quick self-test ─────────────────────────────────────── */
+  .qtest-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1B3A6B;
+    margin-bottom: 8px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+  }
+  .qtest-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .qrow {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 7px 9px;
+  }
+  .qrow input[type="checkbox"] {
+    flex-shrink: 0;
+    margin-top: 1px;
+    width: 13px;
+    height: 13px;
+    cursor: pointer;
+    accent-color: #1B3A6B;
+  }
+  .qlabel { font-size: 11px; color: #1a1a1a; line-height: 1.35; }
+  .qtag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 0 5px;
+    border-radius: 3px;
+    margin-right: 3px;
+    vertical-align: middle;
+  }
+  .tag-c { background: #EEEDFE; color: #3C3489; }
+  .tag-s { background: #E1F5EE; color: #085041; }
+  .tag-r { background: #FAECE7; color: #712B13; }
+  .tag-p { background: #FAEEDA; color: #633806; }
+
+  /* ── Footer ──────────────────────────────────────────────── */
+  .footer {
+    font-size: 9.5px;
+    color: #999;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ── Print styles ────────────────────────────────────────── */
+  @media print {
+    body { padding: 10px 14px; font-size: 11px; }
+    .toolbar { display: none; }
+    .hook { display: block !important; }
+    .crit { break-inside: avoid; }
+    .domain { break-inside: avoid; }
+    .note  { break-inside: avoid; }
+    .sev-card { break-inside: avoid; }
+    @page { margin: 1.5cm; size: A4; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">DSM-5 Substance Use Disorder — Diagnostic Criteria</div>
+<div class="page-sub">
+  Module 11 &nbsp;·&nbsp; DSM-5-TR (APA 2022) &nbsp;·&nbsp; Hooley 2021
+  <span>EXAM STUDY SHEET</span>
+</div>
+
+<div class="rules-strip">
+  <div><strong>Minimum for diagnosis:</strong> ≥ 2 criteria within the same 12-month period</div>
+  <div><strong>Severity:</strong> Mild 2–3 &nbsp;|&nbsp; Moderate 4–5 &nbsp;|&nbsp; Severe 6+</div>
+  <div class="exc">CAFFEINE EXCLUDED FROM SUD</div>
+  <div><strong>Medical context:</strong> Tolerance/withdrawal from prescribed medication ≠ SUD criterion unless compulsive use also present</div>
+</div>
+
+<div class="toolbar">
+  <button onclick="expandAll()">Expand all hooks</button>
+  <button class="sec" onclick="collapseAll()">Collapse</button>
+  <button class="sec" onclick="clearAll()">Clear checks</button>
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+  <div id="progress-label">0 / 11 recalled</div>
+</div>
+
+<!-- ── 4 Domains ─────────────────────────────────────────────── -->
+<div class="domains">
+
+  <!-- Domain 1: Impaired Control -->
+  <div class="domain d1">
+    <div class="dhead">
+      <div class="dlabel">Domain 1</div>
+      <div class="dname">Impaired control</div>
+      <div class="dcount">Criteria 1 – 4</div>
+    </div>
+    <div class="ditems">
+
+      <div class="crit" onclick="toggleCrit(this)">
+        <input type="checkbox" onclick="event.stopPropagation();updateProgress()" title="Mark as recalled">
+        <div class="crit-body">
+          <div class="cnum">C1</div>
+          <div class="ctext">Uses more, or for longer, than intended</div>
+          <div class="hook">
+            <strong>Exam hook:</strong> The intention–reality gap. Plans one drink, has six. Common first sign. Patient often least wants to admit this criterion because it implies loss of control.
+          </div>
+        </div>
+      </div>
+
+      <div class="crit" onclick="toggleCrit(this)">
+        <input type="checkbox" onclick="event.stopPropagation();updateProgress()" title="Mark as recalled">
+        <div class="crit-body">
+          <div class="cnum">C2</div>
+          <div class="ctext">Persistent desire or repeated failed attempts to cut down or stop</div>
+          <div class="hook">
+            <strong>Exam hook:</strong> The <em>desire exists</em> — this is not denial. The behaviour continues despite repeated attempts to stop. Multiple failed quit attempts distinguish it from simple ambivalence.
+          </div>
+        </div>
+      </div>
+
+      <div class="crit" onclick="toggleCrit(this)">
+        <input type="checkbox" onclick="event.stopPropagation();updateProgress()" title="Mark as recalled">
+        <div class="crit-body">
+          <div class="cnum">C3</div>
+          <div class="ctext">Great deal of time spent obtaining, using, or recovering from the substance</div>
+          <div class="hook">
+            <strong>Exam hook:</strong> Substance-related activity consumes hours or days. Time previously spent on work, family, or leisure is now lost to the use cycle. Key functional impairment indicator.
+          </div>
+        </div>
+      </div>
+
+      <div class="crit" onclick="toggleCrit(this)">
+        <input type="checkbox" onclick="event.stopPropagation();updateProgress()" title="Mark as recalled">
+        <div class="crit-body">
+          <div class="cnum">C4</div>
+          <div class="ctext">Craving or strong urge to use</div>
+          <div class="hook">
+            <strong>Exam hook:</strong> <strong>New in DSM-5</strong> — not present in DSM-IV. Neurobiological basis: conditioned dopamine anticipation. Also the theoretical target of cue-exposure therapy.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Domain 2: Social Impairment -->
+  <div class="domain d2">
+    <div class="dhead">
+      <div class="dlabel">Domain 2</div>
+      <div class="dname">Social impairment</div>
+      <div class="dcount">Criteria 5 – 7</div>
+    </div>
+    <div class="ditems">
+
+      <div class="crit" onclick="toggleCrit(this)">
+        <input type="checkbox" onclick="event.stopPropagation();updateProgress()" title="Mark as recalled">
+        <div class="crit-body">
+          <div class="cnum">C5</div>
+          <div class="ctext">Failure to fulfil major role obligations (work, school, home)</div>
+          <div class="hook">
+            <strong>Exam hook:</strong> Missing work, failing exams, neglecting children. Substance now competes with role responsibilities — and wins. Functional impairment, not just use frequency.
+          </div>
+        </div>
+      </div>
+
+      <div class="crit" onclick="toggleCrit(this)">
+        <input type="checkbox" onclick="event.stopPropagation();updateProgress()" title="Mark as recalled">
+        <div class="crit-body">
+          <div class="cnum">C6</div>
+          <div class="ctext">Continued use despite persistent social or interpersonal problems caused by the substance</div>
+          <div class="hook">
+            <strong>Exam hook:</strong> Knows the relationship is damaged by substance use — continues anyway. The <em>awareness of harm + continuation</em> is what makes this clinically significant, not just the harm alone.
+          </div>
+        </div>
+      </div>
+
+      <div class="crit" onclick="toggleCrit(this)">
+        <input type="checkbox" onclick="event.stopPropagation();updateProgress()" title="Mark as recalled">
+        <div class="crit-body">
+          <div class="cnum">C7</div>
+          <div class="ctext">Important social, occupational, or recreational activities given up or reduced because of use</div>
+          <div class="hook">
+            <strong>Exam hook:</strong> Hobbies, sports, friendships, professional activities abandoned. Substance monopolises the reinforcement landscape. Reflects both positive and negative reinforcement narrowing life to the drug.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Domain 3: Risky Use -->
+  <div class="domain d3">
+    <div class="dhead">
+      <div class="dlabel">Domain 3</div>
+      <div class="dname">Risky use</div>
+      <div class="dcount">Criteria 8 – 9</div>
+    </div>
+    <div class="ditems">
+
+      <div class="crit" onclick="toggleCrit(this)">
+        <input type="checkbox" onclick="event.stopPropagation();updateProgress()" title="Mark as recalled">
+        <div class="crit-body">
+          <div class="cnum">C8</div>
+          <div class="ctext">Recurrent use in physically hazardous situations</div>
+          <div class="hook">
+            <strong>Exam hook:</strong> Driving under the influence, operating machinery. Key word: <strong>recurrent</strong>. A single lapse is not sufficient — a pattern of hazardous use is required for this criterion.
+          </div>
+        </div>
+      </div>
+
+      <div class="crit" onclick="toggleCrit(this)">
+        <input type="checkbox" onclick="event.stopPropagation();updateProgress()" title="Mark as recalled">
+        <div class="crit-body">
+          <div class="cnum">C9</div>
+          <div class="ctext">Continued use despite knowing it causes or worsens a physical or psychological problem</div>
+          <div class="hook">
+            <strong>Exam hook:</strong> Drinks knowing it exacerbates liver disease. Uses opioids knowing it triggers depression. The <em>knowledge + continuation</em> is the criterion — not ignorance, not denial.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Domain 4: Pharmacological -->
+  <div class="domain d4">
+    <div class="dhead">
+      <div class="dlabel">Domain 4</div>
+      <div class="dname">Pharmacological</div>
+      <div class="dcount">Criteria 10 – 11</div>
+    </div>
+    <div class="ditems">
+
+      <div class="crit" onclick="toggleCrit(this)">
+        <input type="checkbox" onclick="event.stopPropagation();updateProgress()" title="Mark as recalled">
+        <div class="crit-body">
+          <div class="cnum">C10</div>
+          <div class="ctext">Tolerance — markedly increased amounts needed for same effect, or markedly diminished effect with same amount</div>
+          <div class="hook">
+            <strong>Exam trap:</strong> Tolerance occurring solely within prescribed therapeutic use (e.g. opioids for pain, benzos for anxiety) does <strong>NOT</strong> count unless compulsive use is also present.
+          </div>
+        </div>
+      </div>
+
+      <div class="crit" onclick="toggleCrit(this)">
+        <input type="checkbox" onclick="event.stopPropagation();updateProgress()" title="Mark as recalled">
+        <div class="crit-body">
+          <div class="cnum">C11</div>
+          <div class="ctext">Withdrawal — characteristic syndrome on cessation, or use to relieve or avoid withdrawal symptoms</div>
+          <div class="hook">
+            <strong>Exam traps:</strong> Same medical-context exemption as C10. Hallucinogens: no withdrawal criterion. Caffeine: withdrawal diagnosable but <strong>no SUD diagnosis</strong>. Tobacco: withdrawal ✓ but no intoxication criterion.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /domains -->
+
+<!-- ── Severity Scale ─────────────────────────────────────── -->
+<div class="sev-row">
+  <div class="sev-card mild">
+    <div class="sev-n">2 – 3</div>
+    <div class="sev-lbl">Mild</div>
+    <div class="sev-desc">Minimum threshold. Often first clinical presentation. Many patients do not recognise this as a disorder.</div>
+  </div>
+  <div class="sev-card mod">
+    <div class="sev-n">4 – 5</div>
+    <div class="sev-lbl">Moderate</div>
+    <div class="sev-desc">Significant impairment across multiple domains. Usually affecting relationships and work.</div>
+  </div>
+  <div class="sev-card sev">
+    <div class="sev-n">6 +</div>
+    <div class="sev-lbl">Severe</div>
+    <div class="sev-desc">Most criteria met. High medical and social burden. Often associated with polysubstance use and comorbidities.</div>
+  </div>
+  <div class="sev-card dsm4">
+    <div class="sev-n">DSM-IV → DSM-5</div>
+    <div class="sev-desc" style="margin-top:5px">
+      DSM-IV had separate <strong>Abuse</strong> (1+ criteria) and <strong>Dependence</strong> (3+ criteria) diagnoses.
+      DSM-5 unified them into a single SUD spectrum and <strong>added craving (C4)</strong>.
+      The term <em>addiction</em> was removed due to stigma and uncertain definition.
+    </div>
+  </div>
+</div>
+
+<!-- ── Notes ──────────────────────────────────────────────── -->
+<div class="notes">
+  <div class="note" style="border-left-color:#C00">
+    <div class="note-head" style="color:#C00">Caffeine — the only exclusion</div>
+    <div class="note-body">Caffeine is the <strong>only</strong> substance class with no SUD diagnosis in DSM-5. Caffeine intoxication (≥5 symptoms after 250 mg+) and caffeine withdrawal (headache, fatigue, irritability on cessation) are both diagnosable — but there is no caffeine use disorder.</div>
+  </div>
+  <div class="note" style="border-left-color:#185FA5">
+    <div class="note-head" style="color:#185FA5">Medical-context rule (C10 + C11)</div>
+    <div class="note-body">Tolerance and withdrawal occurring <strong>solely</strong> within appropriate medical treatment do not count toward SUD. The clinician must distinguish therapeutic dependence (expected pharmacological adaptation) from compulsive, problematic use. The presence of compulsive use tips both C10 and C11 back into play.</div>
+  </div>
+  <div class="note" style="border-left-color:#3B6D11">
+    <div class="note-head" style="color:#3B6D11">Substance classes covered (9 of 10)</div>
+    <div class="note-body">SUD applies to: <strong>alcohol, cannabis, hallucinogens, inhalants, opioids, sedatives/hypnotics/anxiolytics, stimulants, tobacco, other/unknown</strong>. Caffeine excluded. Note: hallucinogens have no withdrawal criterion; tobacco has no intoxication criterion.</div>
+  </div>
+  <div class="note" style="border-left-color:#6C3483">
+    <div class="note-head" style="color:#6C3483">Self-medication hypothesis (comorbidity link)</div>
+    <div class="note-body">SUD often develops secondary to another disorder — the individual uses the substance to cope with an underlying condition (anxiety, depression, PTSD, chronic pain). AUD and drug dependence are <strong>2× more likely</strong> in individuals with anxiety, affective, or psychotic disorders.</div>
+  </div>
+</div>
+
+<!-- ── Quick Self-Test Checklist ──────────────────────────── -->
+<div class="qtest-title">Quick self-test — can you name all 11 criteria from memory? Check each one you can recall without looking up.</div>
+
+<div class="qtest-grid">
+  <div class="qrow">
+    <input type="checkbox" title="Tick when you can recall this">
+    <div class="qlabel"><span class="qtag tag-c">C</span> C1 — Uses more / longer than intended</div>
+  </div>
+  <div class="qrow">
+    <input type="checkbox" title="Tick when you can recall this">
+    <div class="qlabel"><span class="qtag tag-c">C</span> C2 — Persistent desire or failed attempts to cut down</div>
+  </div>
+  <div class="qrow">
+    <input type="checkbox" title="Tick when you can recall this">
+    <div class="qlabel"><span class="qtag tag-c">C</span> C3 — Great time spent obtaining / using / recovering</div>
+  </div>
+  <div class="qrow">
+    <input type="checkbox" title="Tick when you can recall this">
+    <div class="qlabel"><span class="qtag tag-c">C</span> C4 — Craving or strong urge to use <em style="font-size:9px;color:#777">(DSM-5 addition)</em></div>
+  </div>
+  <div class="qrow">
+    <input type="checkbox" title="Tick when you can recall this">
+    <div class="qlabel"><span class="qtag tag-s">S</span> C5 — Failure to fulfil major obligations</div>
+  </div>
+  <div class="qrow">
+    <input type="checkbox" title="Tick when you can recall this">
+    <div class="qlabel"><span class="qtag tag-s">S</span> C6 — Continued use despite social / interpersonal problems</div>
+  </div>
+  <div class="qrow">
+    <input type="checkbox" title="Tick when you can recall this">
+    <div class="qlabel"><span class="qtag tag-s">S</span> C7 — Important activities given up or reduced</div>
+  </div>
+  <div class="qrow">
+    <input type="checkbox" title="Tick when you can recall this">
+    <div class="qlabel"><span class="qtag tag-r">R</span> C8 — Recurrent use in hazardous situations</div>
+  </div>
+  <div class="qrow">
+    <input type="checkbox" title="Tick when you can recall this">
+    <div class="qlabel"><span class="qtag tag-r">R</span> C9 — Continued use despite known physical / psychological harm</div>
+  </div>
+  <div class="qrow">
+    <input type="checkbox" title="Tick when you can recall this">
+    <div class="qlabel"><span class="qtag tag-p">P</span> C10 — Tolerance <em style="font-size:9px;color:#777">(medical context exemption!)</em></div>
+  </div>
+  <div class="qrow">
+    <input type="checkbox" title="Tick when you can recall this">
+    <div class="qlabel"><span class="qtag tag-p">P</span> C11 — Withdrawal <em style="font-size:9px;color:#777">(medical context exemption!)</em></div>
+  </div>
+  <div class="qrow" style="background:#EEF4FF;border-color:#B5C8E8">
+    <input type="checkbox" title="Tick when you can recall this">
+    <div class="qlabel" style="font-weight:600;color:#1B3A6B">I can state the minimum criteria, severity bands, and caffeine exception from memory</div>
+  </div>
+</div>
+
+<!-- ── Domain memory hook ─────────────────────────────────── -->
+<div style="background:#F4F6FB;border-radius:5px;padding:9px 13px;margin-bottom:10px;border:1px solid #B5C8E8">
+  <div style="font-size:11px;font-weight:700;color:#1B3A6B;margin-bottom:4px">Memory hook — domain sequence</div>
+  <div style="font-size:11px;color:#333;line-height:1.6">
+    <strong>4 – 3 – 2 – 2</strong> &nbsp;·&nbsp;
+    <span style="background:#EEEDFE;color:#3C3489;padding:1px 7px;border-radius:3px;font-weight:600">Impaired control (4)</span> →
+    <span style="background:#E1F5EE;color:#085041;padding:1px 7px;border-radius:3px;font-weight:600">Social impairment (3)</span> →
+    <span style="background:#FAECE7;color:#712B13;padding:1px 7px;border-radius:3px;font-weight:600">Risky use (2)</span> →
+    <span style="background:#FAEEDA;color:#633806;padding:1px 7px;border-radius:3px;font-weight:600">Pharmacological (2)</span>
+    &nbsp;= 11 criteria total
+  </div>
+</div>
+
+<div class="footer">
+  <span>DSM-5-TR (APA, 2022) &nbsp;·&nbsp; Module 11: Substance-Related &amp; Addictive Disorders &nbsp;·&nbsp; Hooley 2021</span>
+  <span>Print: Ctrl+P / Cmd+P</span>
+</div>
+
+<script>
+function toggleCrit(el) {
+  if (el.classList.contains('open')) {
+    el.classList.remove('open');
+  } else {
+    el.classList.add('open');
+  }
+}
+function expandAll() {
+  document.querySelectorAll('.crit').forEach(function(c) { c.classList.add('open'); });
+}
+function collapseAll() {
+  document.querySelectorAll('.crit').forEach(function(c) { c.classList.remove('open'); });
+}
+function clearAll() {
+  document.querySelectorAll('input[type="checkbox"]').forEach(function(cb) { cb.checked = false; });
+  updateProgress();
+}
+function updateProgress() {
+  var all = document.querySelectorAll('.domain input[type="checkbox"]');
+  var checked = document.querySelectorAll('.domain input[type="checkbox"]:checked');
+  var pct = all.length > 0 ? Math.round(checked.length / all.length * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = checked.length + ' / ' + all.length + ' recalled';
+}
+</script>
+</body>
+</html>
